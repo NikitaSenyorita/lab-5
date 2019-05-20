@@ -2,7 +2,7 @@
 #include <iostream>
 
 const int N = 6; // Мощность множества
-const size_t K = 12; // Мощность множества размещаемых элементов
+const size_t K = 11; // Мощность множества размещаемых элементов
 
 using namespace std;
 

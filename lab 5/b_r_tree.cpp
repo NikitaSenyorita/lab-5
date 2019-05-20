@@ -289,8 +289,8 @@ void b_r_tree::operator=(const b_r_tree& other)
 		root = nullptr;
 		delete[] seq;
 		seq = other.seq;
-		size = other.size;
-		sizeSeq = other.sizeSeq;
+		size = 0;
+		sizeSeq = 0;
 		copy_tree(other.root);
 	}
 }

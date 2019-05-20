@@ -9,7 +9,6 @@ using namespace std;
 
 int main()
 {
-
 	b_r_tree a, b, c, d, e, result;
 	a = *generate();
 	b = *generate();
