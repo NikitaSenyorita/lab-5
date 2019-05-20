@@ -1,6 +1,11 @@
 #pragma once
 #include <iostream>
 
+const int N = 6; // Мощность множества
+const size_t K = 12; // Мощность множества размещаемых элементов
+
+using namespace std;
+
 class b_r_tree;
 
 struct node {
@@ -9,15 +14,12 @@ struct node {
 	int key;
 	bool red = false;
 	node(int key) :key(key) { child[0] = nullptr;  child[1] = nullptr; parent = nullptr;};
-	node();
 	node* brother();
 	void rot_one(b_r_tree& tree, bool dir);
 	~node()
 	{
-		if (child[0])
-			delete child[0];
-		if (child[1])
-			delete child[1];
+		delete child[0];
+		delete child[1];
 
 		child[0] = nullptr;
 		child[1] = nullptr;
@@ -33,13 +35,13 @@ private:
 	size_t sizeSeq;
 
 public:
-	b_r_tree() : root(nullptr), size(0) {}; // check size
+	b_r_tree() : root(nullptr), size(0), seq(nullptr), sizeSeq(0) {}; // check size
 	b_r_tree(b_r_tree &&);
 	b_r_tree(const b_r_tree &);
 	~b_r_tree();
 
 	friend struct node;
-	friend std::ostream & operator<<(std::ostream& os, b_r_tree& set);
+	friend ostream & operator<<(ostream& os, b_r_tree& set);
 	// check empty tree /////////
 	void add(int key);
 	node* make_node(int data);
@@ -59,7 +61,7 @@ public:
 	b_r_tree operator &(const b_r_tree&)const;
 	b_r_tree operator ^(const b_r_tree&)const;
 	b_r_tree operator /(const b_r_tree&)const;
-	void put_all(std::ostream& os, node* temp);
+	void put_all(ostream& os, node* temp);
 	void putSeq_all();
 
 	void removeSeq(size_t);

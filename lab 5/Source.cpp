@@ -3,9 +3,6 @@
 #include <iostream>
 #include<conio.h>
 
-const int N = 5; // Мощность множества
-const size_t K = 11; // Мощность множества размещаемых элементов
-
 b_r_tree* generate();
 
 using namespace std;
@@ -51,17 +48,15 @@ int main()
 	S1 = *generate();
 	S2 = *generate();
 	left = 0;
-	right = 6;
+	right = 3;
 	count = 1;
 
 
 	// Вывод последовательностей
 	cout << endl << endl << endl << "S1: ";
 	S1.putSeq_all();
-	cout << "Tree: " << S1;
 	cout << "S2: ";
 	S2.putSeq_all();
-	cout << "Tree: " << S2;
 
 
 	// Операции над последовательностями
@@ -70,10 +65,20 @@ int main()
 	cout << "S2: ";
 	S2.putSeq_all();
 	S2.erase(left, right);
-	cout << "Tree: " << "new S2: ";
+	cout << "new S2: ";
 	S2.putSeq_all();
-	cout << "new Tree S2: ";
-	cout << "Tree: " << S2;
+
+
+	left = 2;
+	right = 3;
+	// Операции над последовательностями
+	// ERASE
+	cout << endl << endl << "erase S2 from " << left << " to " << right << ": " << endl;
+	cout << "S2: ";
+	S2.putSeq_all();
+	S2.erase(left, right);
+	cout << "new S2: ";
+	S2.putSeq_all();
 
 
 	// MUL
@@ -83,8 +88,6 @@ int main()
 	S1.mul(count);
 	cout << "new S1: ";
 	S1.putSeq_all();
-	cout << "new Tree S1: ";
-	cout << "Tree: " << S1;
 
 
 	// EXCL
@@ -96,8 +99,6 @@ int main()
 	S1.excl(S2);
 	cout << "new S1: ";
 	S1.putSeq_all();
-	cout << "new Tree S1: ";
-	cout << "Tree: " << S1;
 
 	_getch();
 

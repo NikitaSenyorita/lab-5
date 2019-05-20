@@ -1,9 +1,5 @@
 #include "b_r_tree.h"
 
-node::node()
-{
-}
-
 b_r_tree::b_r_tree(const b_r_tree & set)// copy construltor 
 {
 	root = nullptr;
@@ -13,20 +9,20 @@ b_r_tree::b_r_tree(const b_r_tree & set)// copy construltor
 	copy_tree(set.root);
 }
 
-b_r_tree::b_r_tree(b_r_tree && set) // bit-for-bit construltor 
+b_r_tree::b_r_tree(b_r_tree && set)
 {
 	root = set.root;
+	set.root = nullptr;
 	size = set.size;
 	sizeSeq = set.sizeSeq;
 	seq = set.seq;
+	set.seq = nullptr;
 }
 
 b_r_tree::~b_r_tree()
 {
-	if (root)
-		delete root;
-	if (seq)
-		delete seq;
+	delete root;
+	delete[] seq;
 }
 
 void b_r_tree::copy_tree(const node* n) { // O(n log n)
@@ -291,10 +287,10 @@ void b_r_tree::operator=(const b_r_tree& other)
 	if (&other != this) {
 		delete root;
 		root = nullptr;
-		delete seq;
-		seq = nullptr;
-		size = 0;
-		sizeSeq = 0;
+		delete[] seq;
+		seq = other.seq;
+		size = other.size;
+		sizeSeq = other.sizeSeq;
 		copy_tree(other.root);
 	}
 }
@@ -304,7 +300,7 @@ b_r_tree b_r_tree::operator=(b_r_tree& other)
 	if (&other != this) {
 		delete root;
 		root = other.root;
-		delete seq;
+		delete[] seq;
 		seq = other.seq;
 		size = other.size;
 		sizeSeq = other.sizeSeq;
@@ -362,7 +358,7 @@ b_r_tree b_r_tree::operator ^(const b_r_tree& other)const // Other way of solvin
 	return b_r_tree(result);
 }
 
-std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
+ostream& operator<<(ostream& os, b_r_tree& tree)
 {
 	os << "[" << tree.size << "] : \n\t[ ";
 
@@ -373,7 +369,7 @@ std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
 	return os;
 }
 
-void b_r_tree::put_all(std::ostream& os, node* n) {
+void b_r_tree::put_all(ostream& os, node* n) {
 	if (n) {
 		if (n->child[0])
 			put_all(os, n->child[0]);
@@ -391,29 +387,32 @@ void b_r_tree::putSeq_all() {
 	for (size_t i = 0; i < sizeSeq; ++i) {
 
 		if (seq[i])
-			std::cout << seq[i]->key << " ";
+			cout << seq[i]->key << " ";
 	}
 
-	std::cout << std::endl;
+	cout << endl;
 }
+
 
 void b_r_tree::erase(size_t left, size_t right)
 {
-	node ** tempSeq = new node *[sizeSeq - right + left - 1];
-	size_t j = 0;
+	if (left <= right && left < sizeSeq) {
 
-	for (size_t i = 0; i < sizeSeq; ++i) {
+		node ** tempSeq = new node *[sizeSeq - right + left - 1];
+		size_t j = 0;
 
-		if (!(i >= left && i <= right)) {
+		for (size_t i = 0; i < sizeSeq; ++i) {
 
-			tempSeq[j] = seq[i];
-			++j;
+			if (!(i >= left && i <= right)) {
+
+				tempSeq[j] = seq[i];
+				++j;
+			}
 		}
-	}
 
-	sizeSeq -= right - left + 1;
-	seq = tempSeq;
-	tempSeq = nullptr;
+		sizeSeq -= right - left + 1;
+		swap(seq, tempSeq);
+	}
 }
 
 void b_r_tree::removeSeq(size_t j) {
@@ -470,8 +469,6 @@ void b_r_tree::excl(b_r_tree & exclSeq) {
 			}
 		}
 	}
-
-	// treeRestart();
 }
 
 
