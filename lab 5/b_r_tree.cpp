@@ -435,33 +435,45 @@ void b_r_tree::removeSeq(size_t j) {
 	tempSeq = nullptr;
 }
 
-void b_r_tree::excl(b_r_tree & seqDel)
-{
-	if (sizeSeq >= seqDel.sizeSeq) {
+void b_r_tree::excl(b_r_tree & exclSeq) {
 
-		size_t j = 0;
+	if (sizeSeq >= exclSeq.sizeSeq) {
 
-		for (size_t i = 0; i <= sizeSeq - seqDel.sizeSeq; ++i) {
+		int j = 0;
 
-			if (j == seqDel.sizeSeq) {
-				--i;
-				for (size_t g = i; g > i - j; --g)
-					removeSeq(g);
+		for (int i = 0; i < sizeSeq; ++i) {
 
-				i -= j - 1;
-				j = 0;
-			}
-
-			if (seq[i]->key == seqDel.seq[j]->key) {
+			if (seq[i]->key == exclSeq.seq[j]->key) {
 				++j;
 			}
 			else {
 				i -= j;
 				j = 0;
 			}
+
+			if (j == exclSeq.sizeSeq) {
+
+				for (size_t g = i; g > i - j; --g)
+					removeSeq(g);
+
+				i -= j - 1;
+				j = 0;
+
+				if (sizeSeq != 0 && i < sizeSeq)
+					if (seq[i]->key == exclSeq.seq[j]->key) {
+						++j;
+					}
+					else {
+						i -= j;
+						j = 0;
+					}
+			}
 		}
 	}
+
+	// treeRestart();
 }
+
 
 void b_r_tree::mul(size_t n)
 {
