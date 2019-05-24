@@ -1,13 +1,13 @@
 ﻿#include "b_r_tree.h"
 
-b_r_tree::b_r_tree(const b_r_tree & set)// copy construltor 
+b_r_tree::b_r_tree(const b_r_tree & set)
 {
 	root = nullptr;
 	size = 0;
 	copy_tree(set.root);
 }
 
-b_r_tree::b_r_tree(b_r_tree && set) // bit-for-bit construltor 
+b_r_tree::b_r_tree(b_r_tree && set)
 {
 	root = set.root;
 	size = set.size;
@@ -82,11 +82,11 @@ node* b_r_tree::search(int key, node* temp)const
 	else return nullptr;
 }
 
-/* функция для однократного поворота узла */
+// функция для однократного поворота узла
 void node::rot_one(b_r_tree& tree, bool dir) {
 	node* pivot = child[!dir];
 
-	pivot->parent = parent; /* при этом, возможно, pivot становится корнем дерева */
+	pivot->parent = parent;
 	if (parent != nullptr) {
 		if (parent->child[dir] == this)
 			parent->child[dir] = pivot;
@@ -109,7 +109,7 @@ node* b_r_tree::make_node(int data)
 	node *red_node = new node(data);
 
 	if (red_node != nullptr) {
-		red_node->red = true; /* –инициализация красным цветом */
+		red_node->red = true; // Инициализация красным цветом
 	}
 	return red_node;
 }
@@ -140,7 +140,7 @@ void b_r_tree::rebalance_add(node* inserted) {
 					if ((inserted == inserted->parent->child[0]) && (inserted->parent == granda->child[0])) {
 						granda->rot_one(*this, 1);
 					}
-					else { /* (n == n->parent->right) && (n->parent == g->right) */
+					else {
 						granda->rot_one(*this, 0);
 					}
 				}
@@ -152,7 +152,7 @@ void b_r_tree::rebalance_add(node* inserted) {
 			rebalance_add(inserted->parent->parent);
 		}
 	}
-	root->red = false;/////
+	root->red = false;
 }
 
 void b_r_tree::rebalance_delete_3(node* son) {
@@ -318,7 +318,7 @@ void b_r_tree::AND(const node* parent, const b_r_tree& other) {
 	}
 }
 
-b_r_tree b_r_tree::operator ^(const b_r_tree& other)const // Other way of solving - this/other | other/this
+b_r_tree b_r_tree::operator ^(const b_r_tree& other) const
 {
 	b_r_tree result = b_r_tree(*this);
 	result = (result | other) / (result & other);
