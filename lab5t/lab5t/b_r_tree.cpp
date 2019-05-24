@@ -1,28 +1,21 @@
-#include "b_r_tree.h"
+Ôªø#include "b_r_tree.h"
 
 b_r_tree::b_r_tree(const b_r_tree & set)// copy construltor 
 {
 	root = nullptr;
-	seq = nullptr;
 	size = 0;
-	sizeSeq = 0;
 	copy_tree(set.root);
 }
 
-b_r_tree::b_r_tree(b_r_tree && set)
+b_r_tree::b_r_tree(b_r_tree && set) // bit-for-bit construltor 
 {
 	root = set.root;
-	set.root = nullptr;
 	size = set.size;
-	sizeSeq = set.sizeSeq;
-	seq = set.seq;
-	set.seq = nullptr;
 }
 
 b_r_tree::~b_r_tree()
 {
 	delete root;
-	delete[] seq;
 }
 
 void b_r_tree::copy_tree(const node* n) { // O(n log n)
@@ -33,22 +26,12 @@ void b_r_tree::copy_tree(const node* n) { // O(n log n)
 	}
 }
 
-void b_r_tree::add(int key) // O(log n)
+bool b_r_tree::add(int key) // O(log n)
 {
 	node* inserted_node = nullptr;
 
-	++sizeSeq;
-	node * newNode = make_node(key);
-	node ** tempSeq = new node * [sizeSeq];
-	for (size_t i = 0; i < sizeSeq - 1; ++i)
-		tempSeq[i] = seq[i];
-	tempSeq[sizeSeq - 1] = newNode;
-
-	seq = tempSeq;
-	tempSeq = nullptr;
-
 	if (!root) {
-		root = newNode;
+		root = make_node(key);
 		size++;
 		inserted_node = root;
 		root->parent = nullptr;
@@ -57,11 +40,11 @@ void b_r_tree::add(int key) // O(log n)
 		for (node* temp = root; temp;) {
 			if (temp->key == key) {
 				temp = nullptr;
-				return;
+				return false;
 			}
 			else if (temp->key < key) {
 				if (!temp->child[1]) {
-					temp->child[1] = newNode;
+					temp->child[1] = make_node(key);
 					size++;
 					temp->child[1]->parent = temp;
 					inserted_node = temp->child[1];
@@ -72,7 +55,7 @@ void b_r_tree::add(int key) // O(log n)
 			}
 			else {
 				if (!temp->child[0]) {
-					temp->child[0] = newNode;
+					temp->child[0] = make_node(key);
 					size++;
 					temp->child[0]->parent = temp;
 					inserted_node = temp->child[0];
@@ -83,9 +66,8 @@ void b_r_tree::add(int key) // O(log n)
 			}
 		}
 	}
-
 	rebalance_add(inserted_node);
-
+	return true;
 }
 
 node* b_r_tree::search(int key, node* temp)const
@@ -100,11 +82,11 @@ node* b_r_tree::search(int key, node* temp)const
 	else return nullptr;
 }
 
-/* ÙÛÌÍˆËˇ ‰Îˇ Ó‰ÌÓÍ‡ÚÌÓ„Ó ÔÓ‚ÓÓÚ‡ ÛÁÎ‡ */
+/* —Ñ—É–Ω–∫—Ü–∏—è –¥–ª—è –æ–¥–Ω–æ–∫—Ä–∞—Ç–Ω–æ–≥–æ –ø–æ–≤–æ—Ä–æ—Ç–∞ —É–∑–ª–∞ */
 void node::rot_one(b_r_tree& tree, bool dir) {
 	node* pivot = child[!dir];
 
-	pivot->parent = parent; /* ÔË ˝ÚÓÏ, ‚ÓÁÏÓÊÌÓ, pivot ÒÚ‡ÌÓ‚ËÚÒˇ ÍÓÌÂÏ ‰ÂÂ‚‡ */
+	pivot->parent = parent; /* –ø—Ä–∏ —ç—Ç–æ–º, –≤–æ–∑–º–æ–∂–Ω–æ, pivot —Å—Ç–∞–Ω–æ–≤–∏—Ç—Å—è –∫–æ—Ä–Ω–µ–º –¥–µ—Ä–µ–≤–∞ */
 	if (parent != nullptr) {
 		if (parent->child[dir] == this)
 			parent->child[dir] = pivot;
@@ -127,7 +109,7 @@ node* b_r_tree::make_node(int data)
 	node *red_node = new node(data);
 
 	if (red_node != nullptr) {
-		red_node->red = true; /* ñËÌËˆË‡ÎËÁ‡ˆËˇ Í‡ÒÌ˚Ï ˆ‚ÂÚÓÏ */
+		red_node->red = true; /* ‚Äì–∏–Ω–∏—Ü–∏–∞–ª–∏–∑–∞—Ü–∏—è –∫—Ä–∞—Å–Ω—ã–º —Ü–≤–µ—Ç–æ–º */
 	}
 	return red_node;
 }
@@ -287,10 +269,7 @@ void b_r_tree::operator=(const b_r_tree& other)
 	if (&other != this) {
 		delete root;
 		root = nullptr;
-		delete[] seq;
-		seq = other.seq;
 		size = 0;
-		sizeSeq = 0;
 		copy_tree(other.root);
 	}
 }
@@ -300,10 +279,7 @@ b_r_tree b_r_tree::operator=(b_r_tree& other)
 	if (&other != this) {
 		delete root;
 		root = other.root;
-		delete[] seq;
-		seq = other.seq;
 		size = other.size;
-		sizeSeq = other.sizeSeq;
 	}
 	return *this;
 }
@@ -358,7 +334,7 @@ b_r_tree b_r_tree::operator ^(const b_r_tree& other)const // Other way of solvin
 	return b_r_tree(result);
 }
 
-ostream& operator<<(ostream& os, b_r_tree& tree)
+std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
 {
 	os << "[" << tree.size << "] : \n\t[ ";
 
@@ -369,7 +345,7 @@ ostream& operator<<(ostream& os, b_r_tree& tree)
 	return os;
 }
 
-void b_r_tree::put_all(ostream& os, node* n) {
+void b_r_tree::put_all(std::ostream& os, node* n) {
 	if (n) {
 		if (n->child[0])
 			put_all(os, n->child[0]);
@@ -380,113 +356,4 @@ void b_r_tree::put_all(ostream& os, node* n) {
 		if (n->child[1])
 			put_all(os, n->child[1]);
 	}
-}
-
-void b_r_tree::putSeq_all() {
-
-	for (size_t i = 0; i < sizeSeq; ++i) {
-
-		if (seq[i])
-			cout << seq[i]->key << " ";
-	}
-
-	cout << endl;
-}
-
-
-void b_r_tree::erase(size_t left, size_t right)
-{
-	if (left <= right && left < sizeSeq) {
-
-		node ** tempSeq = new node *[sizeSeq - right + left - 1];
-		size_t j = 0;
-
-		for (size_t i = 0; i < sizeSeq; ++i) {
-
-			if (!(i >= left && i <= right)) {
-
-				tempSeq[j] = seq[i];
-				++j;
-			}
-		}
-
-		sizeSeq -= right - left + 1;
-		swap(seq, tempSeq);
-	}
-}
-
-void b_r_tree::removeSeq(size_t j) {
-
-	node ** tempSeq = new node *[sizeSeq - 1];
-	size_t k = 0;
-
-	for (size_t i = 0; i < sizeSeq; ++i) {
-
-		if (i != j) {
-			tempSeq[k] = seq[i];
-			++k;
-		}
-	}
-
-	delete[] seq;
-	--sizeSeq;
-	seq = tempSeq;
-	tempSeq = nullptr;
-}
-
-void b_r_tree::excl(b_r_tree & exclSeq) {
-
-	if (sizeSeq >= exclSeq.sizeSeq) {
-
-		int j = 0;
-
-		for (int i = 0; i < sizeSeq; ++i) {
-
-			if (seq[i]->key == exclSeq.seq[j]->key) {
-				++j;
-			}
-			else {
-				i -= j;
-				j = 0;
-			}
-
-			if (j == exclSeq.sizeSeq) {
-
-				for (size_t g = i; g > i - j; --g)
-					removeSeq(g);
-
-				i -= j - 1;
-				j = 0;
-
-				if (sizeSeq != 0 && i < sizeSeq)
-					if (seq[i]->key == exclSeq.seq[j]->key) {
-						++j;
-					}
-					else {
-						i -= j;
-						j = 0;
-					}
-			}
-		}
-	}
-}
-
-
-void b_r_tree::mul(size_t n)
-{
-	node ** tempSeq = new node *[sizeSeq * (n + 1)];
-	size_t k = 0;
-
-	for (size_t i = 0; i < n + 1; ++i) {
-
-		for (size_t j = 0; j < sizeSeq; ++j) {
-
-			tempSeq[k] = seq[j];
-			++k;
-		}
-	}
-
-	sizeSeq *= n + 1;
-	seq = tempSeq;
-	tempSeq = nullptr;
 }
