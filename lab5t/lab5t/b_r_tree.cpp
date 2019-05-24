@@ -325,7 +325,7 @@ b_r_tree b_r_tree::operator ^(const b_r_tree& other)const // Other way of solvin
 	return b_r_tree(result);
 }
 
-std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
+ostream& operator<<(ostream& os, b_r_tree& tree)
 {
 	os << "[" << tree.size << "] : \n\t[ ";
 
@@ -336,7 +336,7 @@ std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
 	return os;
 }
 
-void b_r_tree::put_all(std::ostream& os, node* n) {
+void b_r_tree::put_all(ostream& os, node* n) {
 	if (n) {
 		if (n->child[0])
 			put_all(os, n->child[0]);

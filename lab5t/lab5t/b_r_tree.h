@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 
+using namespace std;
+
 class b_r_tree;
 
 struct node {
@@ -29,7 +31,7 @@ public:
 	~b_r_tree();
 
 	friend struct node;
-	friend std::ostream & operator<<(std::ostream& os, b_r_tree& set);
+	friend ostream & operator<<(ostream& os, b_r_tree& set);
 	// check empty tree /////////
 	bool add(int key);
 	node* make_node(int data);
@@ -48,6 +50,6 @@ public:
 	b_r_tree operator &(const b_r_tree&)const;
 	b_r_tree operator ^(const b_r_tree&)const;
 	b_r_tree operator /(const b_r_tree&)const;
-	void put_all(std::ostream& os, node* temp);
+	void put_all(ostream& os, node* temp);
 
 };

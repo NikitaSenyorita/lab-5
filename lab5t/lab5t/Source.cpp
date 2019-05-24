@@ -1,6 +1,6 @@
 ﻿#include "b_r_tree.h"
 #include <time.h>
-#include <iostream>
+#include <conio.h>
 
 const int N = 5; // Мощность множества
 
@@ -17,21 +17,21 @@ int main()
 	e = *generate();
 
 
-	std::cout << "A:\n" << a << '\n';
-	std::cout << "B:\n" << b << '\n';
-	std::cout << "C:\n" << c << '\n';
-	std::cout << "D:\n" << d << '\n';
-	std::cout << "E:\n" << e << '\n';
+	cout << "A:\n" << a << '\n';
+	cout << "B:\n" << b << '\n';
+	cout << "C:\n" << c << '\n';
+	cout << "D:\n" << d << '\n';
+	cout << "E:\n" << e << '\n';
 
-	std::cout << "-----------------------------------------------------\n";
+	cout << "-----------------------------------------------------\n";
 
 
-	std::cout << "RESULT = (A | B) ^ (C & D) / E\n\n";
+	cout << "RESULT = (A | B) ^ (C & D) / E\n\n";
 	result = ((a | b) ^ ((c&d) / e));
 
-	std::cout << "RESULT:\n" << result;
+	cout << "RESULT:\n" << result;
 
-	std::cin.get();
+	_getch();
 
 	return 0;
 }
