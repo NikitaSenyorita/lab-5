@@ -43,8 +43,7 @@ public:
 	void copy_tree(const node* n);
 	void difference(const node* n);
 	void AND(const node* parent, const b_r_tree& other);
-	void operator=(const b_r_tree&);
-	b_r_tree operator=(b_r_tree &);
+	b_r_tree& operator=(const b_r_tree &);
 	b_r_tree operator |(const b_r_tree&)const;
 	b_r_tree operator &(const b_r_tree&)const;
 	b_r_tree operator ^(const b_r_tree&)const;

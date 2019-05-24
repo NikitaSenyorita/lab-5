@@ -264,22 +264,13 @@ node* b_r_tree::next_node(node* victim) {
 	return iterator;
 }
 
-void b_r_tree::operator=(const b_r_tree& other)
+b_r_tree& b_r_tree::operator=(const b_r_tree& other)
 {
 	if (&other != this) {
 		delete root;
 		root = nullptr;
 		size = 0;
 		copy_tree(other.root);
-	}
-}
-
-b_r_tree b_r_tree::operator=(b_r_tree& other)
-{
-	if (&other != this) {
-		delete root;
-		root = other.root;
-		size = other.size;
 	}
 	return *this;
 }
