@@ -2,7 +2,7 @@
 #include <time.h>
 #include <conio.h>
 
-const size_t N = 6; // Максимальная мощность множеств
+const size_t N = 6; // Мощность множества
 const size_t POWER = 100; // Мощность множества размещаемых элементов
 
 b_r_tree* generate();
@@ -28,13 +28,11 @@ int main()
 	cout << "E:\n" << E << '\n';
 	cout << "-----------------------------------------------------\n\n";
 
-	// Вычисление цепочки операций
 	temp1 = A | B;
 	temp2 = C & D;
 	temp3 = temp2 / E;
 	result = temp1 ^ temp3;
 
-	// Вывод цепочки операций
 	cout << "A | B\n" << temp1;
 	cout << "\nC & D\n" << temp2;
 	cout << "\n(C & D) / E\n" << temp3;
