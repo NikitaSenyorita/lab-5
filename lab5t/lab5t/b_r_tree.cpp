@@ -1,13 +1,13 @@
 #include "b_r_tree.h"
 
-b_r_tree::b_r_tree(const b_r_tree & set)// copy construltor 
+b_r_tree::b_r_tree(const b_r_tree & set)
 {
 	root = nullptr;
 	size = 0;
 	copy_tree(set.root);
 }
 
-b_r_tree::b_r_tree(b_r_tree && set) // bit-for-bit construltor 
+b_r_tree::b_r_tree(b_r_tree && set)
 {
 	root = set.root;
 	size = set.size;
@@ -82,11 +82,11 @@ node* b_r_tree::search(int key, node* temp)const
 	else return nullptr;
 }
 
-/* функция для однократного поворота узла */
+// функция для однократного поворота узла
 void node::rot_one(b_r_tree& tree, bool dir) {
 	node* pivot = child[!dir];
 
-	pivot->parent = parent; /* при этом, возможно, pivot становится корнем дерева */
+	pivot->parent = parent;
 	if (parent != nullptr) {
 		if (parent->child[dir] == this)
 			parent->child[dir] = pivot;
@@ -109,7 +109,7 @@ node* b_r_tree::make_node(int data)
 	node *red_node = new node(data);
 
 	if (red_node != nullptr) {
-		red_node->red = true; /* –инициализация красным цветом */
+		red_node->red = true;
 	}
 	return red_node;
 }
@@ -124,7 +124,7 @@ void b_r_tree::rebalance_add(node* inserted) {
 				inserted->parent->parent->red = true;
 				rebalance_add(inserted->parent->parent);
 			}
-			else { // insert_case4(n);
+			else {
 				node* granda = inserted->parent->parent;
 				if ((inserted == inserted->parent->child[1]) && (inserted->parent == granda->child[0])) {
 					inserted->parent->rot_one(*this, 0);
@@ -139,18 +139,13 @@ void b_r_tree::rebalance_add(node* inserted) {
 				if ((inserted == inserted->parent->child[0]) && (inserted->parent == granda->child[0])) {
 					granda->rot_one(*this, 1);
 				}
-				else { /* (n == n->parent->right) && (n->parent == g->right) */
+				else {
 					granda->rot_one(*this, 0);
 				}
 			}
-			/*else {
-				inserted->parent->red = false;
-				inserted->parent->parent->red = true;
-				rebalance_add(inserted->parent->parent);
-			}*/
 		}
 	}
-	root->red = false;/////
+	root->red = false;
 }
 
 void b_r_tree::rebalance_delete_3(node* son) {
@@ -257,7 +252,6 @@ void b_r_tree::remove(node* victim) {
 				victim->parent->child[0] = nullptr;
 			else
 				victim->parent->child[1] = nullptr;
-			//(victim == (victim->parent->child[0])) ? victim->parent->child[0] : victim->parent->child[1] = nullptr;
 			}
 		delete victim;	size--;
 	}
@@ -267,20 +261,16 @@ void b_r_tree::remove(node* victim) {
 				victim->child[0]->red = false;
 			else
 				victim->child[1]->red = false;
-			//victim->child[0] != nullptr ? victim->child[0]->red : victim->child[1]->red = false;
-
 		}
 		if (victim->child[0] != nullptr)
 			victim->child[0]->parent = victim->parent;
 		else
 			victim->child[1]->parent = victim->parent;
-		//victim->child[0] != nullptr ? victim->child[0]->parent : victim->child[1]->parent = victim->parent;
 		if (victim->parent) {
 			if (victim->parent->child[0] == victim)
-				victim->parent->child[0] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];// DANGEROUS
+				victim->parent->child[0] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
 			else
 				victim->parent->child[1] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
-			//victim->parent->child[0] == victim ? victim->parent->child[0] : victim->parent->child[1] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
 		}
 		if (victim == root) {
 			root = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
@@ -305,24 +295,14 @@ node* b_r_tree::next_node(node* victim) {
 	while (iterator->child[0])	iterator = iterator->child[0];
 	return iterator;
 }
-
-void b_r_tree::operator=(const b_r_tree& other)
+ 
+b_r_tree & b_r_tree::operator=(const b_r_tree& other)
 {
 	if (&other != this) {
 		delete root;
 		root = nullptr;
 		size = 0;
 		copy_tree(other.root);
-	}
-}
- 
-b_r_tree b_r_tree::operator=(b_r_tree& other)
-{
-	if (&other != this) {
-		delete root;
-		root = other.root;
-		other.root = nullptr;/////////////
-		size = other.size;
 	}
 	return *this;
 }
@@ -370,14 +350,14 @@ void b_r_tree::AND(const node* parent, const b_r_tree& other) {
 	}
 }
 
-b_r_tree b_r_tree::operator ^(const b_r_tree& other)const // Other way of solving - this/other | other/this
+b_r_tree b_r_tree::operator ^(const b_r_tree& other) const
 {
 	b_r_tree result = b_r_tree(*this);
 	result = (result | other) / (result & other);
 	return b_r_tree(result);
 }
 
-std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
+ostream& operator<<(ostream& os, b_r_tree& tree)
 {
 	os << "[" << tree.size << "] : \n\t[ ";
 
@@ -388,7 +368,7 @@ std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
 	return os;
 }
 
-void b_r_tree::put_all(std::ostream& os, node* n) {
+void b_r_tree::put_all(ostream& os, node* n) {
 	if (n) {
 		if (n->child[0])
 			put_all(os, n->child[0]);

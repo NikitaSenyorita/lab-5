@@ -1,37 +1,51 @@
 #include "b_r_tree.h"
 #include <time.h>
 #include <iostream>
-
-const int N = 5; // Мощность множества
+#include <conio.h>
 
 b_r_tree* generate();
 
 int main()
 {
 	srand(time(NULL));
-	b_r_tree a, b, c, d, e, result;
-	a = *generate();
-	b = *generate();
-	c = *generate();
-	d = *generate();
-	e = *generate();
 
 
-	std::cout << "A:\n" << a << '\n';
-	std::cout << "B:\n" << b << '\n';
-	std::cout << "C:\n" << c << '\n';
-	std::cout << "D:\n" << d << '\n';
-	std::cout << "E:\n" << e << '\n';
-
-	std::cout << "-----------------------------------------------------\n";
+	b_r_tree A, B, C, D, E, Temp1, Temp2, Temp3, result;
 
 
-	std::cout << "RESULT = (A | B) ^ (C & D) / E\n\n";
-	result = ((a|b) ^ ((c&d)/e));
+	// Генерация множеств
+	A = *generate();
+	B = *generate();
+	C = *generate();
+	D = *generate();
+	E = *generate();
 
-	std::cout << "RESULT:\n" << result;
 
-	std::cin.get();
+	// Вывод множеств
+	cout << "A:\n" << A << '\n';
+	cout << "B:\n" << B << '\n';
+	cout << "C:\n" << C << '\n';
+	cout << "D:\n" << D << '\n';
+	cout << "E:\n" << E << '\n';
+
+
+	// Цепочка операций
+	Temp1 = A | B;
+	cout << "A | B:\n" << Temp1 << '\n';
+
+	Temp2 = C & D;
+	cout << "C & D:\n" << Temp2 << '\n';
+
+	Temp3 = Temp2 / E;
+	cout << "C & D / E:\n" << Temp3 << '\n';
+
+	result = Temp1 ^ Temp3;
+	cout << "(A | B) ^ ((C & D) / E):\n" << result << '\n';
+
+	cout << "-----------------------------------------------------\n";
+
+
+	_getch();
 
 	return 0;
 }
@@ -40,13 +54,8 @@ b_r_tree* generate()
 {
 	b_r_tree* result = new b_r_tree();
 
-	size_t size = N + (rand() % 6) - 3;
-	int key = 0;
-	for (size_t count = 0; count < size;) {
-		key = (rand() % 20) + 100;
-		if (result->add(key))
-			count++;
-	}
+	for (size_t i = 0; i < N; ++i)
+		result->add(rand() % POWER);
 
 	return result;
 }
