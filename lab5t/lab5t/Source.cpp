@@ -1,8 +1,8 @@
-п»ї#include "b_r_tree.h"
+#include "b_r_tree.h"
 #include <time.h>
-#include <conio.h>
+#include <iostream>
 
-const int N = 5; // РњРѕС‰РЅРѕСЃС‚СЊ РјРЅРѕР¶РµСЃС‚РІР°
+const int N = 5; // Мощность множества
 
 b_r_tree* generate();
 
@@ -17,21 +17,21 @@ int main()
 	e = *generate();
 
 
-	cout << "A:\n" << a << '\n';
-	cout << "B:\n" << b << '\n';
-	cout << "C:\n" << c << '\n';
-	cout << "D:\n" << d << '\n';
-	cout << "E:\n" << e << '\n';
+	std::cout << "A:\n" << a << '\n';
+	std::cout << "B:\n" << b << '\n';
+	std::cout << "C:\n" << c << '\n';
+	std::cout << "D:\n" << d << '\n';
+	std::cout << "E:\n" << e << '\n';
 
-	cout << "-----------------------------------------------------\n";
+	std::cout << "-----------------------------------------------------\n";
 
 
-	cout << "RESULT = (A | B) ^ (C & D) / E\n\n";
-	result = ((a | b) ^ ((c&d) / e));
+	std::cout << "RESULT = (A | B) ^ (C & D) / E\n\n";
+	result = ((a|b) ^ ((c&d)/e));
 
-	cout << "RESULT:\n" << result;
+	std::cout << "RESULT:\n" << result;
 
-	_getch();
+	std::cin.get();
 
 	return 0;
 }
@@ -43,7 +43,7 @@ b_r_tree* generate()
 	size_t size = N + (rand() % 6) - 3;
 	int key = 0;
 	for (size_t count = 0; count < size;) {
-		key = (rand() % 900) + 100;
+		key = (rand() % 20) + 100;
 		if (result->add(key))
 			count++;
 	}

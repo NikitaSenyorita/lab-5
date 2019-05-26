@@ -82,11 +82,11 @@ node* b_r_tree::search(int key, node* temp)const
 	else return nullptr;
 }
 
-/* Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð»Ñ Ð¾Ð´Ð½Ð¾ÐºÑ€Ð°Ñ‚Ð½Ð¾Ð³Ð¾ Ð¿Ð¾Ð²Ð¾Ñ€Ð¾Ñ‚Ð° ÑƒÐ·Ð»Ð° */
+/* ôóíêöèÿ äëÿ îäíîêðàòíîãî ïîâîðîòà óçëà */
 void node::rot_one(b_r_tree& tree, bool dir) {
 	node* pivot = child[!dir];
 
-	pivot->parent = parent; /* Ð¿Ñ€Ð¸ ÑÑ‚Ð¾Ð¼, Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾, pivot ÑÑ‚Ð°Ð½Ð¾Ð²Ð¸Ñ‚ÑÑ ÐºÐ¾Ñ€Ð½ÐµÐ¼ Ð´ÐµÑ€ÐµÐ²Ð° */
+	pivot->parent = parent; /* ïðè ýòîì, âîçìîæíî, pivot ñòàíîâèòñÿ êîðíåì äåðåâà */
 	if (parent != nullptr) {
 		if (parent->child[dir] == this)
 			parent->child[dir] = pivot;
@@ -109,7 +109,7 @@ node* b_r_tree::make_node(int data)
 	node *red_node = new node(data);
 
 	if (red_node != nullptr) {
-		red_node->red = true; /* â€“Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ ÐºÑ€Ð°ÑÐ½Ñ‹Ð¼ Ñ†Ð²ÐµÑ‚Ð¾Ð¼ */
+		red_node->red = true; /* –èíèöèàëèçàöèÿ êðàñíûì öâåòîì */
 	}
 	return red_node;
 }
@@ -124,7 +124,7 @@ void b_r_tree::rebalance_add(node* inserted) {
 				inserted->parent->parent->red = true;
 				rebalance_add(inserted->parent->parent);
 			}
-			else {
+			else { // insert_case4(n);
 				node* granda = inserted->parent->parent;
 				if ((inserted == inserted->parent->child[1]) && (inserted->parent == granda->child[0])) {
 					inserted->parent->rot_one(*this, 0);
@@ -143,6 +143,11 @@ void b_r_tree::rebalance_add(node* inserted) {
 					granda->rot_one(*this, 0);
 				}
 			}
+			/*else {
+				inserted->parent->red = false;
+				inserted->parent->parent->red = true;
+				rebalance_add(inserted->parent->parent);
+			}*/
 		}
 	}
 	root->red = false;/////
@@ -301,7 +306,7 @@ node* b_r_tree::next_node(node* victim) {
 	return iterator;
 }
 
-b_r_tree& b_r_tree::operator=(const b_r_tree& other)
+void b_r_tree::operator=(const b_r_tree& other)
 {
 	if (&other != this) {
 		delete root;
@@ -372,7 +377,7 @@ b_r_tree b_r_tree::operator ^(const b_r_tree& other)const // Other way of solvin
 	return b_r_tree(result);
 }
 
-ostream& operator<<(ostream& os, b_r_tree& tree)
+std::ostream& operator<<(std::ostream& os, b_r_tree& tree)
 {
 	os << "[" << tree.size << "] : \n\t[ ";
 
@@ -383,7 +388,7 @@ ostream& operator<<(ostream& os, b_r_tree& tree)
 	return os;
 }
 
-void b_r_tree::put_all(ostream& os, node* n) {
+void b_r_tree::put_all(std::ostream& os, node* n) {
 	if (n) {
 		if (n->child[0])
 			put_all(os, n->child[0]);

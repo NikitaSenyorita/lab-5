@@ -1,8 +1,6 @@
 #pragma once
 #include <iostream>
 
-using namespace std;
-
 class b_r_tree;
 
 struct node {
@@ -16,6 +14,7 @@ struct node {
 	~node()
 	{
 		delete child[0];	delete child[1];
+		child[0] = nullptr;	child[1] = nullptr;
 	};
 };
 
@@ -31,7 +30,7 @@ public:
 	~b_r_tree();
 
 	friend struct node;
-	friend ostream & operator<<(ostream& os, b_r_tree& set);
+	friend std::ostream & operator<<(std::ostream& os, b_r_tree& set);
 	// check empty tree /////////
 	bool add(int key);
 	node* make_node(int data);
@@ -45,11 +44,12 @@ public:
 	void copy_tree(const node* n);
 	void difference(const node* n);
 	void AND(const node* parent, const b_r_tree& other);
-	b_r_tree& operator=(const b_r_tree &);
+	void operator=(const b_r_tree&);
+	b_r_tree operator=(b_r_tree &);
 	b_r_tree operator |(const b_r_tree&)const;
 	b_r_tree operator &(const b_r_tree&)const;
 	b_r_tree operator ^(const b_r_tree&)const;
 	b_r_tree operator /(const b_r_tree&)const;
-	void put_all(ostream& os, node* temp);
+	void put_all(std::ostream& os, node* temp);
 
 };
