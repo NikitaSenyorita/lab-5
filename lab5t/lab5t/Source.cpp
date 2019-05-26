@@ -42,8 +42,47 @@ int main()
 	result = Temp1 ^ Temp3;
 	cout << "(A | B) ^ ((C & D) / E):\n" << result << '\n';
 
-	cout << "-----------------------------------------------------\n";
 
+	//............................................................ÄÅÌÎÍÑÒĞÀÖÈß ĞÀÁÎÒÛ Ñ ÏÎÑËÅÄÎÂÀÒÅËÜÍÎÑÒßÌÈ
+	b_r_tree S1, S2;
+	size_t left, right; // Ãğàíèöû äëÿ îïåğàöèè erase
+	size_t count; // Êîëè÷åñòâî âñòàâîê mul
+
+
+	left = 0;
+	right = 3;
+	count = 1;
+	S1 = *generate();
+	S2 = *generate();
+
+
+	// Âûâîä ïîñëåäîâàòåëüíîñòåé
+	cout << "\n---------------------------------------------------------\n\n\n";
+	cout << "S1: \n" << S1;
+	cout << "\nS2: \n" << S2;
+
+
+	// Îïåğàöèè íàä ïîñëåäîâàòåëüíîñòÿìè
+	// ERASE
+	cout << "\n\nErase S2 [" << left << "; " << right << "] : \n";
+	cout << "Current S2: \n" << S2;
+	S2.erase(left, right);
+	cout << "New S2: \n" << S2;
+
+
+	// MUL
+	cout << "\n\nMul(" << count << ") S1: \n";
+	cout << "Current S1: \n" << S1;
+	S1.mul(count);
+	cout << "New S1: \n" << S1;
+
+
+	// EXCL
+	cout << "\n\nExcl S2 from S1: \n";
+	cout << "Current S1: \n" << S1;
+	cout << "Current S2: \n" << S2;
+	S1.excl(S2);
+	cout << "New S1: \n" << S1;
 
 	_getch();
 

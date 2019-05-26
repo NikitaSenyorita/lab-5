@@ -39,6 +39,7 @@ bool b_r_tree::add(int key) // O(log n)
 	else {
 		for (node* temp = root; temp;) {
 			if (temp->key == key) {
+				seq.push_back(temp);
 				temp = nullptr;
 				return false;
 			}
@@ -66,6 +67,7 @@ bool b_r_tree::add(int key) // O(log n)
 			}
 		}
 	}
+	seq.push_back(inserted_node);
 	rebalance_add(inserted_node);
 	return true;
 }
@@ -300,9 +302,15 @@ b_r_tree & b_r_tree::operator=(const b_r_tree& other)
 {
 	if (&other != this) {
 		delete root;
+		seq.clear();
 		root = nullptr;
 		size = 0;
 		copy_tree(other.root);
+
+		seq.clear();
+
+		for (size_t i = 0; i < other.seq.size(); ++i)
+			seq.push_back(search(other.seq.at(i)->key));
 	}
 	return *this;
 }
@@ -359,9 +367,13 @@ b_r_tree b_r_tree::operator ^(const b_r_tree& other) const
 
 ostream& operator<<(ostream& os, b_r_tree& tree)
 {
-	os << "[" << tree.size << "] : \n\t[ ";
+	os << "Tree [" << tree.size << "] : \t[ ";
 
 	tree.put_all(os, tree.root);
+
+	os << " ]\n";
+
+	tree.put_Seq(os);
 
 	os << " ]\n";
 
@@ -378,5 +390,92 @@ void b_r_tree::put_all(ostream& os, node* n) {
 		os << " \t ";
 		if (n->child[1])
 			put_all(os, n->child[1]);
+	}
+}
+
+void b_r_tree::put_Seq(ostream & os) {
+
+	os << "Seq [" << seq.size() << "] : \t[ ";
+
+	for (size_t i = 0; i < seq.size(); ++i)
+		os << seq.at(i)->key << " \t";
+}
+
+void b_r_tree::erase(size_t left, size_t right)
+{
+	if (right >= seq.size())
+		right = seq.size() - 1;
+
+	if (left <= right) {
+
+		vector<int> tempSeq;
+
+		for (size_t i = 0; i < seq.size(); ++i)
+			tempSeq.push_back(seq.at(i)->key);
+
+		seq.clear();
+		delete root;
+		root = nullptr;
+		size = 0;
+
+		for (size_t i = 0; i < tempSeq.size(); ++i)
+			if (!(i >= left && i <= right))
+				add(tempSeq.at(i));
+
+	}
+}
+
+void b_r_tree::excl(b_r_tree & exclSeq) {
+
+	if (seq.size() >= exclSeq.seq.size() && exclSeq.seq.size() != 0) {
+
+		vector<int> tempSeq;
+
+		for (size_t i = 0; i < seq.size(); ++i)
+			tempSeq.push_back(seq.at(i)->key);
+
+		seq.clear();
+		delete root;
+		root = nullptr;
+		size = 0;
+
+		int j = 0;
+
+		for (int i = 0; i < tempSeq.size(); ++i) {
+
+			if (tempSeq.at(i) == exclSeq.seq.at(j)->key) {
+				++j;
+			}
+			else {
+				i -= j;
+				j = 0;
+			}
+
+			if (j == exclSeq.seq.size()) {
+
+				for (int g = i; g > i - j; --g)
+					tempSeq.erase(tempSeq.begin() + g);
+
+				i -= j;
+				j = 0;
+			}
+		}
+
+		for (size_t i = 0; i < tempSeq.size(); ++i)
+			add(tempSeq.at(i));
+	}
+}
+
+
+void b_r_tree::mul(size_t n)
+{
+	size_t tempSize = seq.size();
+
+	for (size_t i = 0; i < n; ++i) {
+
+		for (size_t j = 0; j < tempSize; ++j) {
+
+			seq.push_back(seq[j]);
+		}
 	}
 }

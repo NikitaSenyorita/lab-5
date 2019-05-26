@@ -1,12 +1,13 @@
 #pragma once
 #include <iostream>
+#include <vector>
 
 class b_r_tree;
 
 using namespace std;
 
-const size_t N = 6; // Размер последовательностей
-const size_t POWER = 11; // Мощность множества размещаемых элементов
+const size_t N = 5; // Размер последовательностей
+const size_t POWER = 5; // Мощность множества размещаемых элементов
 
 struct node {
 
@@ -32,6 +33,7 @@ class b_r_tree {
 
 	node *root;
 	int size;
+	vector<node *> seq;
 
 public:
 
@@ -58,6 +60,10 @@ public:
 	void difference(const node* n);
 	void AND(const node* parent, const b_r_tree& other);
 	void put_all(ostream& os, node* temp);
+	void put_Seq(ostream& os);
+	void erase(size_t, size_t);
+	void excl(b_r_tree &);
+	void mul(size_t);
 
 	b_r_tree& operator=(const b_r_tree &);
 	b_r_tree operator |(const b_r_tree&)const;
