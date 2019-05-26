@@ -1,4 +1,4 @@
-﻿#include "b_r_tree.h"
+#include "b_r_tree.h"
 
 b_r_tree::b_r_tree(const b_r_tree & set)// copy construltor 
 {
@@ -117,9 +117,9 @@ node* b_r_tree::make_node(int data)
 void b_r_tree::rebalance_add(node* inserted) {
 	if (root == inserted)
 		inserted->red = false;
-	else if (inserted->parent->red) {
-		if (inserted->parent->brother()) {
-			if (inserted->parent->brother()->red) {
+	else {
+		if (inserted->parent->red) {
+			if (inserted->parent->brother() && inserted->parent->brother()->red) {
 				inserted->parent->red = false;	inserted->parent->brother()->red = false;
 				inserted->parent->parent->red = true;
 				rebalance_add(inserted->parent->parent);
@@ -128,28 +128,21 @@ void b_r_tree::rebalance_add(node* inserted) {
 				node* granda = inserted->parent->parent;
 				if ((inserted == inserted->parent->child[1]) && (inserted->parent == granda->child[0])) {
 					inserted->parent->rot_one(*this, 0);
-					rebalance_add(inserted->child[0]);
+					inserted = inserted->child[0];
 				}
 				else if ((inserted == inserted->parent->child[0]) && (inserted->parent == granda->child[1])) {
 					inserted->parent->rot_one(*this, 1);
-					rebalance_add(inserted->child[1]);
+					inserted = inserted->child[1];
 				}
-				else {
-					inserted->parent->red = false;
-					granda->red = true;
-					if ((inserted == inserted->parent->child[0]) && (inserted->parent == granda->child[0])) {
-						granda->rot_one(*this, 1);
-					}
-					else { /* (n == n->parent->right) && (n->parent == g->right) */
-						granda->rot_one(*this, 0);
-					}
+				inserted->parent->red = false;
+				granda->red = true;
+				if ((inserted == inserted->parent->child[0]) && (inserted->parent == granda->child[0])) {
+					granda->rot_one(*this, 1);
+				}
+				else { /* (n == n->parent->right) && (n->parent == g->right) */
+					granda->rot_one(*this, 0);
 				}
 			}
-		}
-		else {
-			inserted->parent->red = false;
-			inserted->parent->parent->red = true;
-			rebalance_add(inserted->parent->parent);
 		}
 	}
 	root->red = false;/////
@@ -165,12 +158,14 @@ void b_r_tree::rebalance_delete_3(node* son) {
 			bro->child[0]->red = false;
 			bro->rot_one(*this, 1);
 		}
-		else if ((son == son->parent->child[1]) &&
-			(bro->child[0]->red == false) &&
-			(bro->child[1]->red == true)) {
-			bro->red = true;
-			bro->child[1]->red = false;
-			bro->rot_one(*this, 0);
+		else {
+			if ((son == son->parent->child[1]) &&
+				(bro->child[0]->red == false) &&
+				(bro->child[1]->red == true)) {
+				bro->red = true;
+				bro->child[1]->red = false;
+				bro->rot_one(*this, 0);
+			}
 		}
 	}
 	bro->red = son->parent->red;
@@ -188,10 +183,18 @@ void b_r_tree::rebalance_delete_3(node* son) {
 
 void b_r_tree::rebalance_delete_2(node* son) {
 	node* bro = son->brother();
+	bool bro_left_child_black, bro_rigth_child_black;
+													 
+	if (bro->child[0]) bro_left_child_black = bro->child[0]->red == false;
+	else bro_left_child_black = true;
+
+	if (bro->child[1]) bro_rigth_child_black = bro->child[1]->red == false;
+	else bro_rigth_child_black = true;
+
 	if ((son->parent->red == true) &&
 		(bro->red == false) &&
-		(bro->child[0]->red == false) &&
-		(bro->child[1]->red == false)) {
+		(bro_left_child_black) &&
+		(bro_rigth_child_black)) {
 		bro->red = true;
 		son->parent->red = false;
 	}
@@ -200,22 +203,33 @@ void b_r_tree::rebalance_delete_2(node* son) {
 }
 
 void b_r_tree::rebalance_delete(node* son) {
-	if (son) {
+	if (son && son != root) {
 		node* bro = son->brother();
-		if (bro->red) {
-			son->parent->red = true;
-			bro->red = false;
-			if (son == son->parent->child[0])
-				son->parent->rot_one(*this, 0);
-			else
-				son->parent->rot_one(*this, 1);
-		}
-		if (!(son->parent->red || bro->red || bro->child[0]->red || bro->child[1]->red)) {
-			bro->red = true;
-			rebalance_delete(son->parent);
-		}
+		if (!bro)	son->red = true;
 		else {
-			rebalance_delete_2(son);
+			if (bro->red) {
+				son->parent->red = true;
+				bro->red = false;
+				if (son == son->parent->child[0])
+					son->parent->rot_one(*this, 0);
+				else
+					son->parent->rot_one(*this, 1);
+			}
+			bool bro_left_child_black, bro_rigth_child_black;
+
+			if (bro->child[0]) bro_left_child_black = bro->child[0]->red == false;
+			else bro_left_child_black = true;
+
+			if (bro->child[1]) bro_rigth_child_black = bro->child[1]->red == false;
+			else bro_rigth_child_black = true;
+
+			if (!son->parent->red && !bro->red && bro_left_child_black && bro_rigth_child_black) {
+				bro->red = true;
+				rebalance_delete(son->parent);
+			}
+			else {
+				rebalance_delete_2(son);
+			}
 		}
 	}
 }
@@ -231,19 +245,42 @@ void b_r_tree::remove(node* victim) {
 	bool black = !victim->red;
 
 	if (!(victim->child[0] || victim->child[1])) {
-		victim == victim->parent->child[0] ? victim->parent->child[0] : victim->parent->child[1] = nullptr;
 		if (victim == root)
 			root = nullptr;
+		else{
+			if (victim == (victim->parent->child[0]))
+				victim->parent->child[0] = nullptr;
+			else
+				victim->parent->child[1] = nullptr;
+			//(victim == (victim->parent->child[0])) ? victim->parent->child[0] : victim->parent->child[1] = nullptr;
+			}
 		delete victim;	size--;
 	}
 	else if (victim->child[0] != nullptr ^ victim->child[1] != nullptr) {
-		if (!victim->red)
-			victim->child[0] != nullptr ? victim->child[0]->red : victim->child[1]->red = false;
-		victim->child[0] != nullptr ? victim->child[0]->parent : victim->child[1]->parent = victim->parent;
-		if (victim->parent)
-			victim->parent->child[0] == victim ? victim->parent->child[0] : victim->parent->child[1] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
-		if (victim == root)
+		if (!victim->red) {
+			if (victim->child[0] != nullptr)
+				victim->child[0]->red = false;
+			else
+				victim->child[1]->red = false;
+			//victim->child[0] != nullptr ? victim->child[0]->red : victim->child[1]->red = false;
+
+		}
+		if (victim->child[0] != nullptr)
+			victim->child[0]->parent = victim->parent;
+		else
+			victim->child[1]->parent = victim->parent;
+		//victim->child[0] != nullptr ? victim->child[0]->parent : victim->child[1]->parent = victim->parent;
+		if (victim->parent) {
+			if (victim->parent->child[0] == victim)
+				victim->parent->child[0] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];// DANGEROUS
+			else
+				victim->parent->child[1] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
+			//victim->parent->child[0] == victim ? victim->parent->child[0] : victim->parent->child[1] = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
+		}
+		if (victim == root) {
 			root = victim->child[0] != nullptr ? victim->child[0] : victim->child[1];
+		}
+		victim->child[0] = victim->child[1] = nullptr;
 		delete victim;	size--;
 	}
 	if (black)
@@ -271,6 +308,16 @@ b_r_tree& b_r_tree::operator=(const b_r_tree& other)
 		root = nullptr;
 		size = 0;
 		copy_tree(other.root);
+	}
+}
+ 
+b_r_tree b_r_tree::operator=(b_r_tree& other)
+{
+	if (&other != this) {
+		delete root;
+		root = other.root;
+		other.root = nullptr;/////////////
+		size = other.size;
 	}
 	return *this;
 }
